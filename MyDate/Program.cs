@@ -3,7 +3,7 @@ using MyDate_Namespace;
 
 
 
-MyDate date1 = new MyDate(2023,11,28);
+MyDate date1 = new MyDate(25,11,28);
 MyDate date2 = new MyDate();
 
 Console.WriteLine(date1.DatesDifference(date2));

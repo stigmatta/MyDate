@@ -25,7 +25,18 @@ namespace MyDate_Namespace
         public int? Year
         {
             get { return year; }
-            set { year = value; }
+            set {
+                try
+                {
+                    if (value < 0)
+                        throw new Exception("Год не может быть отрицательным");
+                    else
+                        year = value;
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
         }
 
         public int? Month
@@ -33,8 +44,17 @@ namespace MyDate_Namespace
             get { return month; }
             set
             {
-                if (value >= 1 && value <= 12)
-                    month = value;
+                try
+                {
+                    if (value >= 1 && value <= 12)
+                        month = value;
+                    else
+                        throw new Exception("Такого месяца нет");
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
             }
         }
 
@@ -43,8 +63,16 @@ namespace MyDate_Namespace
             get { return day; }
             set
             {
-                if (month.HasValue && value >= 1 && value <= months_days[month.Value - 1].days) 
-                    day = value;
+                try
+                {
+                    if (month.HasValue && value >= 1 && value <= months_days[month.Value - 1].days)
+                        day = value;
+                    else throw new Exception("День в неверном формате");
+                }catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
             }
         }
 
@@ -73,19 +101,29 @@ namespace MyDate_Namespace
 
         public MyDate SmallerDate(MyDate second)
         {
-            if (!this.IsNotNullable() || !second.IsNotNullable())
-                return null; 
+            try
+            {
+                if (!this.IsNotNullable() || !second.IsNotNullable())
+                    throw new Exception("Какая-то из дат в неверном формате");
+                else
+                {
+                    if (this.Year < second.Year) return this;
+                    if (this.Year > second.Year) return second;
 
-            if (this.Year < second.Year) return this;
-            if (this.Year > second.Year) return second;
+                    if (this.Month < second.Month) return this;
+                    if (this.Month > second.Month) return second;
 
-            if (this.Month < second.Month) return this;
-            if (this.Month > second.Month) return second;
+                    if (this.Day < second.Day) return this;
+                    if (this.Day > second.Day) return second;
+                    return null;
 
-            if (this.Day < second.Day) return this;
-            if (this.Day > second.Day) return second;
+                }
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
 
-            return null;
         }
 
         public int CountDays()
@@ -105,38 +143,62 @@ namespace MyDate_Namespace
 
         public int DatesDifference(MyDate second)
         {
-            if (!this.IsNotNullable() || !second.IsNotNullable())
-                return -1; 
+            try
+            {
+                if (!this.IsNotNullable() || !second.IsNotNullable())
+                    throw new Exception("Какая-то из дат в неверном формате");
+                else
+                    return Math.Abs(this.CountDays() - second.CountDays());
+            }catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
+            }
 
-            return Math.Abs(this.CountDays() - second.CountDays()); 
         }
 
         public MyDate PlusDays(int days)
         {
             if (this.IsNotNullable())
             {
-                while (days > 0)
+                try
                 {
-                    if (this.Day == months_days[this.Month.Value - 1].days)
+                    while (days > 0)
                     {
-                        if (this.Month == 12)
+                        if (this.Day == months_days[this.Month.Value - 1].days)
                         {
-                            this.Month = 1;
-                            this.Year++;
+                            if (this.Month == 12)
+                            {
+                                this.Month = 1;
+                                this.Year++;
+                            }
+                            else
+                            {
+                                this.Month++;
+                            }
+                            this.Day = 1;
                         }
                         else
-                            this.Month++;
-
-                        this.Day = 1;
+                        {
+                            this.Day++;
+                        }
+                        days--;
                     }
-                    else
-                        this.Day++;
-
-                    days--;
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+
+                return this;
             }
-            return this;
+            else
+            {
+                throw new Exception("Дата пуста");
+            }
         }
+
+
 
         public void PrintDate()
         {
